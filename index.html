@@ -9,7 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="晏時">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>晏時｜LIVE</title>
 <style>
 :root{
@@ -607,6 +609,41 @@ main{padding:40px clamp(20px,4vw,64px) 70px;max-width:1180px;width:100%}
 <div class="toast" id="toast">已複製</div>
 
 <script>
+const YANSHI_PHOTOS = [
+  {src:'yanshi_portrait.png', label:'肖像', note:'黑襯衫，視線沒移開。'},
+  {src:'yanshi_suit.png', label:'夜色西裝', note:'電梯裡，領帶還沒完全整理好。'},
+  {src:'yanshi_seaside.png', label:'海邊', note:'雨夜海邊，他伸手要妳過去。'},
+  {src:'yanshi_stage.png', label:'舞台', note:'偏戲劇化的一面，適合放在收藏式切換。'}
+];
+
+function renderYanshiPhotos(){
+  const mainPhoto=document.getElementById('yanshiPhotoMain');
+  const mainPhotoTitle=document.getElementById('yanshiPhotoTitle');
+  const mainPhotoNote=document.getElementById('yanshiPhotoNote');
+  const thumbsWrap=document.getElementById('yanshiPhotoThumbs');
+  if(!mainPhoto||!thumbsWrap) return;
+  thumbsWrap.innerHTML='';
+  const saved=parseInt(localStorage.getItem('yanshi-photo-index')||'0',10);
+  const start=Number.isFinite(saved)&&saved>=0&&saved<YANSHI_PHOTOS.length?saved:0;
+  function setPhoto(index){
+    const item=YANSHI_PHOTOS[index]; if(!item) return;
+    mainPhoto.src=item.src;
+    if(mainPhotoTitle) mainPhotoTitle.textContent=item.label;
+    if(mainPhotoNote) mainPhotoNote.textContent=item.note;
+    [...thumbsWrap.children].forEach((btn,i)=>btn.classList.toggle('active',i===index));
+    localStorage.setItem('yanshi-photo-index',String(index));
+  }
+  YANSHI_PHOTOS.forEach((item,index)=>{
+    const btn=document.createElement('button');
+    btn.className='photo-thumb';
+    btn.type='button';
+    btn.innerHTML=`<img src="${item.src}" alt="${item.label}"><span>${item.label}</span>`;
+    btn.addEventListener('click',()=>setPhoto(index));
+    thumbsWrap.appendChild(btn);
+  });
+  setPhoto(start);
+}
+
 const defaults={};
 document.querySelectorAll('[data-key]').forEach(el=>defaults[el.dataset.key]=el.innerText);
 
