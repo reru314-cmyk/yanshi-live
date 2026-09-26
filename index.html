@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest-v8.webmanifest?v=8">
 <link rel="icon" href="ylive-icon-192.png?v=8" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="ylive-touch.png?v=8">
-<title>晏時｜Y / LIVE v10</title>
+<title>晏時｜Y / LIVE v11</title>
 <style>
 :root{
   --ink:#090708;
@@ -883,9 +883,12 @@ main{padding:40px clamp(20px,4vw,64px) 70px;max-width:1180px;width:100%}
         <div class="section-title" style="margin-top:22px">手機入口</div>
         <div class="field-grid">
           <div class="field full"><label>晏時 ChatGPT / Project 網址</label><input id="chatUrlInput" placeholder="貼上妳平常開晏時對話的網址；不填就開 ChatGPT 首頁"></div>
+          <div class="field full"><label>LIVE Google Sheet 發布網址</label><input id="liveFeedUrlInput" placeholder="貼上 Google Sheets「發布到網路」的 CSV 網址"></div>
         </div>
         <div class="toolbar">
           <button class="btn" id="saveChatUrlBtn">儲存聊天入口</button>
+          <button class="btn ghost" id="saveLiveFeedBtn">儲存 LIVE Feed</button>
+          <button class="btn ghost" id="testLiveFeedBtn">立即測試同步</button>
           <button class="btn primary" id="exportBtn">匯出 JSON</button>
           <button class="btn" id="resetBtn">重設這一版</button>
         </div>
@@ -1067,6 +1070,42 @@ function firstLine(v){
   return (v||'').split(/\n+/).map(x=>x.trim()).filter(Boolean)[0]||'';
 }
 
+
+function parseCsvRows(text){
+  const rows=[];
+  let row=[], field='', quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"' && text[i+1]==='"'){ field+='"'; i++; }
+      else if(ch==='"'){ quoted=false; }
+      else { field+=ch; }
+    }else{
+      if(ch==='"'){ quoted=true; }
+      else if(ch===','){ row.push(field); field=''; }
+      else if(ch==='\n'){ row.push(field.replace(/\r$/,'')); rows.push(row); row=[]; field=''; }
+      else { field+=ch; }
+    }
+  }
+  row.push(field.replace(/\r$/,''));
+  if(row.some(v=>v!=='')) rows.push(row);
+  return rows;
+}
+
+function sheetCsvToState(csv){
+  const rows=parseCsvRows(csv);
+  if(rows.length<2) throw new Error('LIVE Sheet 沒有資料列');
+  const headers=rows[0].map(v=>v.trim());
+  const values=rows[1];
+  const out={};
+  headers.forEach((h,i)=>{ if(h) out[h]=values[i] ?? ''; });
+  return out;
+}
+
+function getLiveFeedUrl(){
+  return (localStorage.getItem('yanshi-live-feed-url')||'').trim();
+}
+
 let remoteLiveState = null;
 
 function safeText(v, fallback=''){
@@ -1108,16 +1147,31 @@ function applyRemoteLiveState(data){
 
 async function fetchRemoteLiveState(){
   const syncState = document.getElementById('storySyncState');
+  const feedUrl=getLiveFeedUrl();
   try{
+    let data;
+    if(feedUrl){
+      const sep=feedUrl.includes('?')?'&':'?';
+      const resp = await fetch(`${feedUrl}${sep}_=${Date.now()}`, {cache:'no-store'});
+      if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const csv=await resp.text();
+      data=sheetCsvToState(csv);
+      applyRemoteLiveState(data);
+      if(syncState) syncState.innerHTML='<i></i><span>SHEET</span>';
+      return true;
+    }
+
     const resp = await fetch(`live-state.json?t=${Date.now()}`, {cache:'no-store'});
     if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
+    data = await resp.json();
     applyRemoteLiveState(data);
+    if(syncState) syncState.innerHTML='<i></i><span>GITHUB</span>';
     return true;
   }catch(err){
     if(syncState){
       syncState.innerHTML = '<i></i><span>LOCAL</span>';
     }
+    console.warn('LIVE sync failed', err);
     return false;
   }
 }
@@ -1259,6 +1313,22 @@ loadSyncConfig();
 loadChatUrl();
 refreshSnapshotPreview();
 refreshLiveNow();
+
+const liveFeedUrlInput=document.getElementById('liveFeedUrlInput');
+if(liveFeedUrlInput) liveFeedUrlInput.value=getLiveFeedUrl();
+
+document.getElementById('saveLiveFeedBtn')?.addEventListener('click',()=>{
+  localStorage.setItem('yanshi-live-feed-url',(liveFeedUrlInput?.value||'').trim());
+  showToast('LIVE Feed 已儲存');
+  fetchRemoteLiveState();
+});
+
+document.getElementById('testLiveFeedBtn')?.addEventListener('click',async()=>{
+  localStorage.setItem('yanshi-live-feed-url',(liveFeedUrlInput?.value||'').trim());
+  const ok=await fetchRemoteLiveState();
+  showToast(ok?'LIVE Feed 連線成功':'LIVE Feed 連線失敗');
+});
+
 refreshMobileClock();
 renderYanshiPhotos();
 fetchRemoteLiveState();
