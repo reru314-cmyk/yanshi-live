@@ -1,10 +1,5 @@
-const CACHE = 'yanshi-live-v7';
-const ASSETS = [
-  './manifest.webmanifest',
-  './icon.svg',
-  './icon-192.png',
-  './icon-512.png',
-  './apple-touch-icon.png',
+const CACHE = 'yanshi-live-v8';
+const STATIC_ASSETS = [
   './yanshi_portrait.png',
   './yanshi_suit.png',
   './yanshi_seaside.png',
@@ -14,7 +9,7 @@ const ASSETS = [
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE).then(cache => cache.addAll(STATIC_ASSETS))
   );
 });
 
@@ -22,7 +17,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     Promise.all([
       caches.keys().then(keys =>
-        Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+        Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))
       ),
       self.clients.claim()
     ])
@@ -30,27 +25,29 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  const request = event.request;
+  const req = event.request;
+  const url = new URL(req.url);
 
-  // HTML/navigation: always try the newest network copy first.
-  if (request.mode === 'navigate' || request.destination === 'document') {
+  if (
+    req.mode === 'navigate' ||
+    req.destination === 'document' ||
+    url.pathname.endsWith('manifest-v8.webmanifest') ||
+    url.pathname.includes('ylive-icon-') ||
+    url.pathname.endsWith('ylive-touch.png')
+  ) {
     event.respondWith(
-      fetch(request, { cache: 'no-store' })
-        .then(response => response)
-        .catch(() => caches.match('./index.html'))
+      fetch(req, {cache:'no-store'}).catch(() => caches.match(req))
     );
     return;
   }
 
-  // Static assets: use cache, while refreshing it from network.
   event.respondWith(
-    caches.match(request).then(cached => {
-      const network = fetch(request).then(response => {
-        if (response && response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put(request, copy));
+    caches.match(req).then(cached => {
+      const network = fetch(req).then(resp => {
+        if (resp && resp.ok) {
+          caches.open(CACHE).then(cache => cache.put(req, resp.clone()));
         }
-        return response;
+        return resp;
       }).catch(() => cached);
       return cached || network;
     })
