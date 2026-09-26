@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest-v8.webmanifest?v=8">
 <link rel="icon" href="ylive-icon-192.png?v=8" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="ylive-touch.png?v=8">
-<title>晏時｜Y / LIVE v9</title>
+<title>晏時｜Y / LIVE v10</title>
 <style>
 :root{
   --ink:#090708;
@@ -490,6 +490,78 @@ main{padding:40px clamp(20px,4vw,64px) 70px;max-width:1180px;width:100%}
   }
 }
 
+
+/* BUILD V10 — LIVE STATE FEED */
+.story-now-card{
+  margin:14px 0 16px;
+  padding:18px 18px 16px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(111,29,47,.18), transparent 34%),
+    linear-gradient(180deg,rgba(29,16,20,.92),rgba(16,10,12,.96));
+}
+.story-now-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.story-now-label{
+  font-size:10px;
+  letter-spacing:.24em;
+  color:#a9969c;
+}
+.story-now-sync{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:9px;
+  letter-spacing:.12em;
+  color:#8f8185;
+}
+.story-now-sync i{
+  width:6px;height:6px;border-radius:50%;
+  background:#a84c63;
+  box-shadow:0 0 12px rgba(168,76,99,.55);
+}
+.story-now-text{
+  font-size:15px;
+  line-height:1.8;
+  color:#e0d6d9;
+  white-space:pre-line;
+}
+.last-beat{
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
+.last-beat small{
+  display:block;
+  margin-bottom:6px;
+  font-size:9px;
+  letter-spacing:.21em;
+  color:#88797e;
+}
+.last-beat p{
+  margin:0;
+  font-size:13px;
+  line-height:1.65;
+  color:#c8bcc0;
+}
+.story-updated{
+  margin-top:10px;
+  font-size:9px;
+  letter-spacing:.10em;
+  color:#74686c;
+}
+@media(max-width:820px){
+  .story-now-card{padding:16px 15px 14px;border-radius:20px}
+  .story-now-text{font-size:14px;line-height:1.75}
+  .last-beat p{font-size:12px}
+}
+
 </style>
 </head>
 <body>
@@ -551,6 +623,20 @@ main{padding:40px clamp(20px,4vw,64px) 70px;max-width:1180px;width:100%}
         <div class="quick-mini"><span>RELATION</span><b id="liveNowRelation">未婚夫妻</b></div>
         <div class="quick-mini"><span>WORK</span><b id="liveNowWork">目前稿件：未命名</b></div>
         <div class="quick-mini"><span>THREAD</span><b id="liveNowThread">目前沒有掛著的事</b></div>
+      </div>
+
+
+      <div class="story-now-card">
+        <div class="story-now-head">
+          <div class="story-now-label">STORY NOW / 當前劇情</div>
+          <div class="story-now-sync" id="storySyncState"><i></i><span>WAITING</span></div>
+        </div>
+        <div class="story-now-text" id="storyNowText">目前尚未同步新的劇情。</div>
+        <div class="last-beat">
+          <small>LAST BEAT / 最後一拍</small>
+          <p id="lastBeatText">尚未同步。</p>
+        </div>
+        <div class="story-updated" id="storyUpdatedAt">UPDATED —</div>
       </div>
 
       <div class="photo-card">
@@ -980,7 +1066,67 @@ document.querySelectorAll('[data-page]').forEach(btn=>{
 function firstLine(v){
   return (v||'').split(/\n+/).map(x=>x.trim()).filter(Boolean)[0]||'';
 }
+
+let remoteLiveState = null;
+
+function safeText(v, fallback=''){
+  return (typeof v === 'string' && v.trim()) ? v.trim() : fallback;
+}
+
+function applyRemoteLiveState(data){
+  if(!data || typeof data !== 'object') return;
+  remoteLiveState = data;
+
+  const setText = (id, value, fallback='—') => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = safeText(value, fallback);
+  };
+
+  setText('liveNowLocation', data.location, '位置未同步');
+  setText('liveNowState', data.state, '狀態未同步');
+  setText('liveNowLine', data.line, '……');
+  setText('liveNowRelation', data.relation, '—');
+  setText('liveNowWork', data.work, '未命名稿件');
+  setText('liveNowThread', data.thread, '目前沒有掛著的事');
+  setText('storyNowText', data.scene_summary, '目前尚未同步新的劇情。');
+  setText('lastBeatText', data.last_beat, '尚未同步。');
+
+  if(data.scene_time){
+    setText('liveNowTime', data.scene_time, clockText());
+  }
+
+  const updated = document.getElementById('storyUpdatedAt');
+  if(updated){
+    updated.textContent = data.updated_at ? `UPDATED ${data.updated_at}` : 'UPDATED —';
+  }
+
+  const syncState = document.getElementById('storySyncState');
+  if(syncState){
+    syncState.innerHTML = '<i></i><span>SYNCED</span>';
+  }
+}
+
+async function fetchRemoteLiveState(){
+  const syncState = document.getElementById('storySyncState');
+  try{
+    const resp = await fetch(`live-state.json?t=${Date.now()}`, {cache:'no-store'});
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    applyRemoteLiveState(data);
+    return true;
+  }catch(err){
+    if(syncState){
+      syncState.innerHTML = '<i></i><span>LOCAL</span>';
+    }
+    return false;
+  }
+}
+
 function refreshLiveNow(){
+  if(remoteLiveState){
+    applyRemoteLiveState(remoteLiveState);
+    return;
+  }
   const p=getPanelData();
   const l=getLiveData();
   const byId=id=>document.getElementById(id);
@@ -1115,6 +1261,8 @@ refreshSnapshotPreview();
 refreshLiveNow();
 refreshMobileClock();
 renderYanshiPhotos();
+fetchRemoteLiveState();
+setInterval(fetchRemoteLiveState,30000);
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>

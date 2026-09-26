@@ -1,4 +1,4 @@
-const CACHE = 'yanshi-live-v9';
+const CACHE = 'yanshi-live-v10';
 const STATIC_ASSETS = [
   './yanshi_portrait.png',
   './yanshi_suit.png',
@@ -27,6 +27,14 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const req = event.request;
   const url = new URL(req.url);
+
+
+  if (url.pathname.endsWith('live-state.json')) {
+    event.respondWith(
+      fetch(req, {cache:'no-store'})
+    );
+    return;
+  }
 
   if (
     req.mode === 'navigate' ||
