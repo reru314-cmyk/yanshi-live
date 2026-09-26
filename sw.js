@@ -1,4 +1,4 @@
-const CACHE = 'yanshi-live-v11';
+const CACHE = 'yanshi-live-v12';
 const STATIC_ASSETS = [
   './yanshi_portrait.png',
   './yanshi_suit.png',
