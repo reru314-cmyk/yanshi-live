@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>晏時｜Y / LIVE v21</title>
+<title>晏時｜Y / LIVE v22</title>
 <style>
 :root{
   --ink:#090708;
@@ -1539,6 +1539,162 @@ body:before{
   }
 }
 
+
+/* =========================================================
+   V22 — play restore / thread icon / first-meet memory
+   ========================================================= */
+
+/* restore the original play affordance */
+.yl-play span{
+  font-size:19px!important;
+  margin-left:3px!important;
+  transform:none!important;
+}
+
+/* clean thread icon: outlined speech bubble without the awkward three dots */
+.yl-thread-icon{
+  position:relative;
+  width:22px!important;
+  min-width:22px;
+  height:18px;
+  font-size:0!important;
+  color:transparent!important;
+  border:1.4px solid #ed718e;
+  border-radius:7px;
+  box-sizing:border-box;
+  opacity:.95;
+}
+.yl-thread-icon::after{
+  content:"";
+  position:absolute;
+  left:4px;
+  bottom:-4px;
+  width:6px;
+  height:6px;
+  border-left:1.4px solid #ed718e;
+  border-bottom:1.4px solid #ed718e;
+  background:#2a0c14;
+  transform:skewY(-36deg) rotate(-12deg);
+}
+.yl-thread-icon span{
+  display:none!important;
+}
+
+/* first-meet memory card */
+.yl-firstmeet-card{
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr);
+  gap:14px;
+  align-items:center;
+  margin-top:14px;
+  padding:18px 18px 20px;
+  border-radius:20px;
+  border:1px solid rgba(239,126,151,.34);
+  background:
+    radial-gradient(circle at 83% 18%,rgba(119,24,48,.18),transparent 30%),
+    linear-gradient(145deg,rgba(48,12,23,.91),rgba(18,7,11,.97));
+  box-shadow:0 18px 44px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.018);
+}
+.yl-firstmeet-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      105deg,
+      transparent 0 18px,
+      rgba(255,255,255,.012) 18px 19px
+    );
+  opacity:.35;
+}
+.yl-firstmeet-card::after{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  top:-1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,183,199,.28),transparent);
+}
+.yl-firstmeet-mark{
+  position:relative;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  border:1px solid rgba(239,126,151,.38);
+  background:rgba(89,20,39,.34);
+  font-family:Georgia,serif;
+  font-size:18px;
+  color:#f5d9df;
+  box-shadow:inset 0 0 18px rgba(255,106,136,.06);
+}
+.yl-firstmeet-copy{
+  position:relative;
+  z-index:2;
+}
+.yl-firstmeet-copy small{
+  display:block;
+  font-family:Georgia,serif;
+  font-size:9px;
+  letter-spacing:.20em;
+  color:#d8afb9;
+}
+.yl-firstmeet-copy h3{
+  margin:5px 0 0;
+  font-family:'Noto Serif TC',Georgia,serif;
+  font-size:20px;
+  line-height:1.45;
+  font-weight:500;
+  color:#fff0f3;
+}
+.yl-firstmeet-copy p{
+  margin:8px 0 0;
+  font-size:12px;
+  line-height:1.75;
+  color:#bba6ac;
+}
+.yl-firstmeet-meta{
+  position:absolute;
+  right:16px;
+  bottom:9px;
+  z-index:2;
+  font-size:8px;
+  letter-spacing:.16em;
+  color:#826d73;
+}
+
+@media(max-width:520px){
+  .yl-firstmeet-card{
+    grid-template-columns:44px minmax(0,1fr);
+    gap:11px;
+    padding:15px 14px 19px;
+    border-radius:18px;
+  }
+  .yl-firstmeet-mark{
+    width:42px;
+    height:42px;
+    font-size:15px;
+  }
+  .yl-firstmeet-copy h3{
+    font-size:17px;
+  }
+  .yl-firstmeet-copy p{
+    font-size:11px;
+    line-height:1.65;
+  }
+  .yl-firstmeet-meta{
+    right:13px;
+    bottom:7px;
+    font-size:7px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1599,7 +1755,7 @@ body:before{
           <div class="yl-hero-state" id="liveNowState">克制，沒有退開</div>
           <div class="yl-hero-line" id="liveNowLine">「…還不睡？」</div>
         </div>
-        <button class="yl-play" id="openChatBtn" aria-label="去找晏時" title="去找晏時"><span>↗</span></button>
+        <button class="yl-play" id="openChatBtn" aria-label="去找晏時" title="去找晏時"><span>▶</span></button>
       </div>
 
       <div class="yl-triplet">
@@ -1610,7 +1766,7 @@ body:before{
           <div class="yl-info-icon">▤</div><div><small>WORK</small><em>目前稿件</em><strong id="liveNowWork">未命名</strong></div><b>›</b>
         </button>
         <div class="yl-info-card">
-          <div class="yl-info-icon">●●●</div><div><small>THREAD</small><em>現在掛著的事</em><strong id="liveNowThread">目前沒有掛著的事</strong></div>
+          <div class="yl-info-icon yl-thread-icon" aria-hidden="true"><span></span></div><div><small>THREAD</small><em>現在掛著的事</em><strong id="liveNowThread">目前沒有掛著的事</strong></div>
         </div>
       </div>
 
@@ -1668,8 +1824,18 @@ body:before{
           <div class="yl-info-icon">≋</div><div><small>HEART</small><em>默契</em><strong>SAME HEART</strong></div><b>›</b>
         </div>
         <div class="yl-info-card">
-          <div class="yl-info-icon">▤</div><div><small>MEMORY</small><em>專屬紀錄</em><strong>ALWAYS LIVE</strong></div><b>›</b>
+          <div class="yl-info-icon">▤</div><div><small>MEMORY</small><em>初遇</em><strong>夜雨書店</strong></div><b>›</b>
         </div>
+      </div>
+
+      <div class="yl-firstmeet-card">
+        <div class="yl-firstmeet-mark">01</div>
+        <div class="yl-firstmeet-copy">
+          <small>FIRST MEET / 初遇</small>
+          <h3>敦化南路，夜雨裡的書店。</h3>
+          <p>雨聲貼著玻璃落下。那一晚，你們第一次真正走進彼此的視線裡。</p>
+        </div>
+        <div class="yl-firstmeet-meta">TAIPEI · NIGHT RAIN</div>
       </div>
 
       <div class="yl-life-card us">
