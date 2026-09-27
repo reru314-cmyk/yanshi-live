@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>晏時｜Y / LIVE v22</title>
+<title>晏時｜Y / LIVE v23</title>
 <style>
 :root{
   --ink:#090708;
@@ -1695,6 +1695,21 @@ body:before{
   }
 }
 
+
+/* =========================================================
+   V23 — relationship timeline correction
+   ========================================================= */
+.tl-firstmeet time{
+  color:#ef7893!important;
+}
+.tl-firstmeet b{
+  color:#fff0f3!important;
+}
+.tl-firstmeet::before{
+  background:#d94366!important;
+  box-shadow:0 0 14px rgba(217,67,102,.45);
+}
+
 </style>
 </head>
 <body>
@@ -1828,16 +1843,6 @@ body:before{
         </div>
       </div>
 
-      <div class="yl-firstmeet-card">
-        <div class="yl-firstmeet-mark">01</div>
-        <div class="yl-firstmeet-copy">
-          <small>FIRST MEET / 初遇</small>
-          <h3>敦化南路，夜雨裡的書店。</h3>
-          <p>雨聲貼著玻璃落下。那一晚，你們第一次真正走進彼此的視線裡。</p>
-        </div>
-        <div class="yl-firstmeet-meta">TAIPEI · NIGHT RAIN</div>
-      </div>
-
       <div class="yl-life-card us">
         <img src="yanshi-us-lifestyle-v21.png" alt="晏時與甯曦的生活照">
         <div class="yl-life-shade"></div>
@@ -1916,9 +1921,14 @@ body:before{
       <div class="section-title">關係時間線</div>
       <div class="block">
         <div class="timeline">
+          <div class="tl tl-firstmeet">
+            <time>FIRST MEET / 初遇</time>
+            <b>敦化南路・夜雨・書店</b>
+            <p>雨聲貼著書店玻璃落下。那一晚是起點；後來幾次看似偶然的遇見，才慢慢把距離拉近。</p>
+          </div>
           <div class="tl">
             <time>EARLY</time>
-            <b>從室友與日常靠近開始</b>
+            <b>相識後，室友與日常靠近</b>
             <p>那些看似普通的接送、共餐與睡前互動，慢慢變成固定位置。</p>
           </div>
           <div class="tl">
