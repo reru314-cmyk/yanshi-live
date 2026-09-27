@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>晏時｜Y / LIVE v20</title>
+<title>晏時｜Y / LIVE v21</title>
 <style>
 :root{
   --ink:#090708;
@@ -1382,6 +1382,163 @@ body:before{
   .yl-us-bottom-quote{min-height:164px!important}
 }
 
+
+/* =========================================================
+   V21 — integrated lifestyle visuals + safe crop
+   ========================================================= */
+
+.yl-hero-img{
+  object-fit:cover!important;
+  object-position:center 30%!important;
+}
+
+.yl-story-card>img{
+  object-position:center 45%!important;
+}
+
+.yl-us-hero>img{
+  object-position:center 24%!important;
+}
+
+.yl-us-bottom-quote>img{
+  object-position:center 44%!important;
+}
+
+.yl-lastbeat-card>img,
+.yl-four-grid img{
+  object-position:center top!important;
+}
+
+.yl-height-photo{
+  background-position:center 34%!important;
+}
+
+/* Chat entry: no longer reads like media playback */
+.yl-play{
+  display:grid!important;
+  place-items:center!important;
+}
+.yl-play span{
+  font-size:24px!important;
+  margin:0!important;
+  line-height:1!important;
+  transform:translateY(-1px);
+}
+
+/* Unified lifestyle image card */
+.yl-life-card{
+  position:relative;
+  overflow:hidden;
+  min-height:220px;
+  margin-top:14px;
+  border-radius:20px;
+  border:1px solid rgba(239,126,151,.42);
+  background:#16070b;
+  box-shadow:0 18px 44px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.018);
+}
+.yl-life-card>img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:saturate(.92) contrast(1.03) brightness(.84);
+}
+.yl-life-card.work>img{
+  object-position:center 44%;
+}
+.yl-life-card.us>img{
+  object-position:center 42%;
+}
+.yl-life-shade{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(12,4,7,.88) 0%,rgba(12,4,7,.58) 47%,rgba(12,4,7,.10) 82%),
+    linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.22));
+}
+.yl-life-copy{
+  position:absolute;
+  z-index:2;
+  left:20px;
+  right:20px;
+  bottom:18px;
+  max-width:62%;
+}
+.yl-life-copy small{
+  display:block;
+  font-family:Georgia,serif;
+  font-size:9px;
+  letter-spacing:.20em;
+  color:#ddb9c2;
+}
+.yl-life-copy h3{
+  margin:6px 0 0;
+  font-family:'Noto Serif TC',Georgia,serif;
+  font-size:22px;
+  line-height:1.35;
+  font-weight:500;
+  color:#fff0f3;
+}
+.yl-life-copy p{
+  margin:8px 0 0;
+  font-size:12px;
+  line-height:1.7;
+  color:#c9b3b9;
+}
+.yl-life-card:after{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  top:-1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,183,199,.28),transparent);
+}
+
+/* Work page visual hierarchy */
+#work .hero{
+  margin-top:14px;
+}
+#work .hero-main,
+#work .hero-meta{
+  border-color:rgba(239,126,151,.24);
+  background:linear-gradient(145deg,rgba(41,12,21,.90),rgba(18,7,11,.96));
+}
+#work .whisper{
+  margin-top:14px;
+  border-left-color:#9a2d48;
+  background:linear-gradient(90deg,rgba(122,36,56,.15),transparent);
+}
+
+/* Us lifestyle insertion */
+.yl-us-life-note{
+  margin-top:8px;
+  color:#a98f96;
+  font-size:10px;
+  letter-spacing:.12em;
+}
+
+@media(max-width:520px){
+  .yl-life-card{
+    min-height:190px;
+    border-radius:18px;
+  }
+  .yl-life-copy{
+    left:15px;
+    right:15px;
+    bottom:14px;
+    max-width:66%;
+  }
+  .yl-life-copy h3{
+    font-size:18px;
+  }
+  .yl-life-copy p{
+    font-size:11px;
+    line-height:1.6;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1442,7 +1599,7 @@ body:before{
           <div class="yl-hero-state" id="liveNowState">克制，沒有退開</div>
           <div class="yl-hero-line" id="liveNowLine">「…還不睡？」</div>
         </div>
-        <button class="yl-play" id="openChatBtn" aria-label="去找晏時"><span>▶</span></button>
+        <button class="yl-play" id="openChatBtn" aria-label="去找晏時" title="去找晏時"><span>↗</span></button>
       </div>
 
       <div class="yl-triplet">
@@ -1515,6 +1672,17 @@ body:before{
         </div>
       </div>
 
+      <div class="yl-life-card us">
+        <img src="yanshi-us-lifestyle-v21.png" alt="晏時與甯曦的生活照">
+        <div class="yl-life-shade"></div>
+        <div class="yl-life-copy">
+          <small>US / PRIVATE MOMENT</small>
+          <h3>不是事件，只是我們。</h3>
+          <p>沒有要記進時間線的事。只是靠在一起，讓這一刻留在這裡。</p>
+        </div>
+      </div>
+      <div class="yl-us-life-note">LIFE PHOTO / 日常影像</div>
+
       <div class="yl-height-card">
         <div class="yl-height-title"><span>♧</span><div><strong>身高對比</strong><small>HEIGHT DIFFERENCE</small></div></div>
         <div class="yl-height-body">
@@ -1548,6 +1716,16 @@ body:before{
     <section class="page" id="work">
       <div class="eyebrow">DESK / 他是作家，不是標籤</div>
       <div class="section-title">工作台</div>
+
+      <div class="yl-life-card work">
+        <img src="yanshi-work-lifestyle-v21.png" alt="晏時深夜寫稿">
+        <div class="yl-life-shade"></div>
+        <div class="yl-life-copy">
+          <small>DESK / LATE NIGHT</small>
+          <h3>稿紙還亮著。</h3>
+          <p>真正的工作狀態放在下面；這張只留下他還坐在桌前的樣子。</p>
+        </div>
+      </div>
 
       <div class="hero">
         <div class="hero-main">

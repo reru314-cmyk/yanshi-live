@@ -1,4 +1,4 @@
-const CACHE = 'yanshi-live-v20';
+const CACHE = 'yanshi-live-v21';
 
 const STATIC_ASSETS = [
   './',
@@ -17,7 +17,9 @@ const STATIC_ASSETS = [
   './yanshi-head-4.jpg',
   './yanshi-seaside-wide.png',
   './yanshi-stage-wide.png',
-  './yanshi-lounge-vertical.png'
+  './yanshi-lounge-vertical.png',
+  './yanshi-work-lifestyle-v21.png',
+  './yanshi-us-lifestyle-v21.png'
 ];
 
 self.addEventListener('install', event => {
