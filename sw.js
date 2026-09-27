@@ -1,9 +1,11 @@
-const CACHE = 'yanshi-live-v12';
+const CACHE = 'yanshi-live-v13';
 const STATIC_ASSETS = [
   './yanshi_portrait.png',
   './yanshi_suit.png',
   './yanshi_seaside.png',
-  './yanshi_stage.png'
+  './yanshi_stage.png',
+  './couple-height.png',
+  './ningxi-portrait.png'
 ];
 
 self.addEventListener('install', event => {
@@ -28,11 +30,8 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   const url = new URL(req.url);
 
-
   if (url.pathname.endsWith('live-state.json')) {
-    event.respondWith(
-      fetch(req, {cache:'no-store'})
-    );
+    event.respondWith(fetch(req, {cache:'no-store'}));
     return;
   }
 

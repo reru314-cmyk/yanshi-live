@@ -1,18 +1,12 @@
 {
-  "name": "晏時｜LIVE 私人狀態",
+  "name": "晏時｜Y / LIVE",
   "short_name": "晏時",
-  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#090708",
   "theme_color": "#090708",
-  "lang": "zh-Hant",
-  "orientation": "portrait-primary",
+  "start_url": "./index.html",
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
   ]
 }
