@@ -1,4 +1,4 @@
-const CACHE = 'yanshi-live-v19';
+const CACHE = 'yanshi-live-v20';
 
 const STATIC_ASSETS = [
   './',
