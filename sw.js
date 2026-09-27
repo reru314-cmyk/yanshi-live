@@ -1,11 +1,23 @@
-const CACHE = 'yanshi-live-v17';
+const CACHE = 'yanshi-live-v19';
+
 const STATIC_ASSETS = [
-  './yanshi_portrait.png',
-  './yanshi_suit.png',
-  './yanshi_seaside.png',
-  './yanshi_stage.png',
-  './couple-height.png',
-  './ningxi-portrait.png'
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png',
+  './hero-top-banner.png',
+  './couple-kiss-banner.png',
+  './couple-hug-vertical.png',
+  './couple-height-gaze-v18.png',
+  './yanshi-head-1.jpg',
+  './yanshi-head-2.jpg',
+  './yanshi-head-3.jpg',
+  './yanshi-head-4.jpg',
+  './yanshi-seaside-wide.png',
+  './yanshi-stage-wide.png',
+  './yanshi-lounge-vertical.png'
 ];
 
 self.addEventListener('install', event => {
@@ -28,35 +40,21 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   const req = event.request;
+  if (req.method !== 'GET') return;
+
   const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
 
-  if (url.pathname.endsWith('live-state.json')) {
-    event.respondWith(fetch(req, {cache:'no-store'}));
-    return;
-  }
-
-  if (
-    req.mode === 'navigate' ||
-    req.destination === 'document' ||
-    url.pathname.endsWith('manifest-v8.webmanifest') ||
-    url.pathname.includes('ylive-icon-') ||
-    url.pathname.endsWith('ylive-touch.png')
-  ) {
-    event.respondWith(
-      fetch(req, {cache:'no-store'}).catch(() => caches.match(req))
-    );
-    return;
-  }
-
+  // Network-first: updated GitHub Pages assets win; cache is only fallback.
   event.respondWith(
-    caches.match(req).then(cached => {
-      const network = fetch(req).then(resp => {
+    fetch(req, {cache:'no-store'})
+      .then(resp => {
         if (resp && resp.ok) {
-          caches.open(CACHE).then(cache => cache.put(req, resp.clone()));
+          const copy = resp.clone();
+          caches.open(CACHE).then(cache => cache.put(req, copy));
         }
         return resp;
-      }).catch(() => cached);
-      return cached || network;
-    })
+      })
+      .catch(() => caches.match(req))
   );
 });
